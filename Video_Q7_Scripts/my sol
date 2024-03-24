@@ -1,0 +1,23 @@
+select * from day_indicator;
+
+-- solution 1
+select * from day_indicator
+where product_id='AP755'
+and to_char(dates,'dy') in ('mon','wed','fri','sun')
+
+union
+select * from day_indicator
+where product_id='XQ802'
+and to_char(dates,'dy') in ('mon','fri','sat');
+
+
+-- solution 2
+with cte as(select 
+	*,
+	extract('isodow' from dates),
+	case when substring(day_indicator,extract('isodow' from dates)::int,1) ='1' THEN 1 else 0 end as flag  
+from day_indicator)
+
+select product_id,day_indicator,dates 
+from cte
+where flag=1;
